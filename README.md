@@ -1,0 +1,1 @@
+A simple exercise of the usage of hash maps
