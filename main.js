@@ -117,6 +117,8 @@ class LinkedList {
       }
       //Change the value to null of the last node to delete space in memory
       this.#tail.changeValue(null);
+      //Change the name to null of the last node to delete space in memory
+      this.#tail.changeName(null);
       //Tail becomes the node that is before the last node
       this.#tail = previousNode;
       //The next node now is null, because it was deleted
@@ -164,6 +166,43 @@ class LinkedList {
     }
     //If there is not a match the value does not exist
     return "The value does not exist";
+  }
+  
+  delete(index) {
+    //Check if the list is empty
+    if (this.#size === 0) {
+      return false;
+    //Check if the list only has one node
+    } else if(this.#size === 1) {
+      //Set value to null to delete the space in memory
+      this.#head.changeValue(null);
+      //The linked list is now empty
+      this.#head = 0;
+      this.#tail = 0;
+      this.#size -= 1;
+    } else {
+      //Create a variable to store the node that is before the index node
+      let previousNode = this.#head;
+      //Reduce the index so that the while loop stops before the desire node
+      let sizes = this.getSize - 1; 
+      let counter = 1;
+      //While loop to find the node that is before the index
+      while(counter < sizes) {
+        previousNode = previousNode.getNextNode;
+        counter += 1;
+      }
+      //Change the value to null of the last node to delete space in memory
+      this.#tail.changeValue(null);
+      //Change the name to null of the last node to delete space in memory
+      this.#tail.changeName(null);
+      //Tail becomes the node that is before the last node
+      this.#tail = previousNode;
+      //The next node now is null, because it was deleted
+      this.#tail.changeNextNode(null);
+      //Reduce the size of the linked list
+      this.#size -= 1;
+    }
+
   }
 
   //Returns a string with the complete linked list
@@ -236,6 +275,11 @@ class Node {
   changeValue(value) {
     this.#value = value;
   }
+
+  //Changes the value of the name
+  changeName(value) {
+    this.#name = value;
+  }
 }
 
 
@@ -288,6 +332,10 @@ class HashMap {
       let hashCode = this.hash(key);
       //Determine the index of the bucket that will receive the key and value
       let index = hashCode % this.#capacity;
+      //checks if the index is within the array bounds
+      if (index < 0 || index >= this.#capacity) {
+        throw new Error("Trying to access index out of bounds");
+      }
       //Check if the index is empty
       if(this.#keyArray[index] == undefined) {
           //Create a new linked list that will store the values
@@ -303,7 +351,7 @@ class HashMap {
       } 
       //If the index already has a linked list, create a counter to iterate over the the nodes
       let counter = this.#keyArray[index].getHead;
-      //For loops to iterate the linked list
+      //For loop to iterate the linked list
       for (let i = 0; i < this.#keyArray[index].getSize; i++) {
         //Check if the key already exists in the linked list
         if(counter.getName == key) {
@@ -321,8 +369,100 @@ class HashMap {
       //INICIA BORRAR, ESTO SOLO ES PARA IR CHECANDO QUE FUNCIONE
       return this.#keyArray[index].string(); 
       //ACABA BORRAR, SOLO DEBE DE HABE RUN RETURN   
+      //AQUI FALTA EL HACER CRECER EL ARRAY AL FINAL
     }
-    //AQUI FALTA EL HACER CRECER EL ARRAY AL FINAL
+
+    //Get the value of the key
+    get(key) {
+      //Get the hash code of the key
+      let hashCode = this.hash(key);
+      //Determine the index of the bucket of the key
+      let index = hashCode % this.#capacity;
+      //Checks if the index is within the array bounds
+      if (index < 0 || index >= this.#capacity) {
+        throw new Error("Trying to access index out of bounds");
+      }
+      //If the index is empty
+      if(this.#keyArray[index] == undefined) {
+        return null;
+      } else {
+        //If the index is not empty, create a counter to iterate over the the nodes
+        let counter = this.#keyArray[index].getHead;
+        //For loop to iterate the linked list
+        for(let i = 0; i < this.#keyArray[index].getSize; i++) {
+          //Check if the name of the node is equal to the key
+          if(counter.getName == key) {
+            return counter.getValue;
+          }
+          //If it is not equal continue to the next node
+          counter = counter.getNextNode;
+        }
+        //Return null if no equal keys are found
+        return null;
+      }
+    }
+
+    //Check if the hash map has the key
+    has(key) {
+      //Get the hash code of the key
+      let hashCode = this.hash(key);
+      //Determine the index of the bucket of the key
+      let index = hashCode % this.#capacity;
+      //Checks if the index is within the array bounds
+      if (index < 0 || index >= this.#capacity) {
+        throw new Error("Trying to access index out of bounds");
+      }
+      //If the index is empty
+      if(this.#keyArray[index] == undefined) {
+        return false;
+      } else {
+        //If the index is not empty, create a counter to iterate over the the nodes
+        let counter = this.#keyArray[index].getHead;
+        //For loop to iterate the linked list
+        for(let i = 0; i < this.#keyArray[index].getSize; i++) {
+          //Check if the name of the node is equal to the key
+          if(counter.getName == key) {
+            return true;
+          }
+          //If it is not equal continue to the next node
+          counter = counter.getNextNode;
+        }
+        //Return false if no equal keys are found
+        return false;
+      }
+    }
+
+    //Remove a key of the hash map
+    remove(key) {
+      //Get the hash code of the key
+      let hashCode = this.hash(key);
+      //Determine the index of the bucket of the key
+      let index = hashCode % this.#capacity;
+      //Checks if the index is within the array bounds
+      if (index < 0 || index >= this.#capacity) {
+        throw new Error("Trying to access index out of bounds");
+      }
+      //If the index is empty
+      if(this.#keyArray[index] == undefined) {
+        return false;
+      } else {
+        //If the index is not empty, create a counter to iterate over the the nodes
+        let counter = this.#keyArray[index].getHead;
+        //For loop to iterate the linked list
+        for(let i = 0; i < this.#keyArray[index].getSize; i++) {
+          //Check if the name of the node is equal to the key
+          if(counter.getName == key) {
+            return true;
+          }
+          //If it is not equal continue to the next node
+          counter = counter.getNextNode;
+        }
+        //Return false if no equal keys are found
+        return false;
+      }
+    }
+
+
 }
 
 let example = new HashMap();
@@ -335,3 +475,9 @@ console.log(example.set("Carlos", "I am the old value"));
 console.log(example.set("Carlos", "I am the new value"));
 console.log(example.set("t", "I am the t old value"));
 console.log(example.set("t", "I am the t new value"));
+console.log(example.get("i"));
+console.log(example.get("t"));
+console.log(example.get("Carlos"));
+console.log(example.has("i"));
+console.log(example.has("t"));
+console.log(example.has("Carlos"));
