@@ -282,50 +282,47 @@ class HashMap {
         return hashCode;
     }
 
-    // example() {
-    //     let a = this.#keyArray;
-    //     for(let i = 0; i < a.length; i++) {
-    //         console.log(a[i]);
-    //     }
-    // }
-
     //Function that puts the information in the hash map
     set(key, value) {
-        let hashCode = this.hash(key);
-        let index = hashCode % this.#capacity;
-        if(this.#keyArray[index] == undefined) {
-            let list = new LinkedList();
-            list.append(key, value);
-            this.#keyArray[index] = list;
-            //PARA BORRAR
-            let a = this.#keyArray[index];
-            return a.string();
-        } 
-        let counter = this.#keyArray[index].getHead;
-        for (let i = 0; i < this.#keyArray[index].getSize; i++) {
-            if(counter.getName == key) {
-                counter.changeValue(value);
-                return this.#keyArray[index].string();
-            }
+      //Create the hash code
+      let hashCode = this.hash(key);
+      //Determine the index of the bucket that will receive the key and value
+      let index = hashCode % this.#capacity;
+      //Check if the index is empty
+      if(this.#keyArray[index] == undefined) {
+          //Create a new linked list that will store the values
+          let list = new LinkedList();
+          //Append to the linked list a node with the key and value
+          list.append(key, value);
+          //The index stores the linked list
+          this.#keyArray[index] = list;
+          //INICIA BORRAR, ESTO SOLO ES PARA IR CHECANDO QUE FUNCIONE
+          let a = this.#keyArray[index];
+          return a.string();
+          //ACABA BORRAR, SOLO DEBE DE HABE RUN RETURN
+      } 
+      //If the index already has a linked list, create a counter to iterate over the the nodes
+      let counter = this.#keyArray[index].getHead;
+      //For loops to iterate the linked list
+      for (let i = 0; i < this.#keyArray[index].getSize; i++) {
+        //Check if the key already exists in the linked list
+        if(counter.getName == key) {
+          //Update the value to the new one
+          counter.changeValue(value);
+          //INICIA BORRAR, ESTO SOLO ES PARA IR CHECANDO QUE FUNCIONE
+          return this.#keyArray[index].string();
+          //ACABA BORRAR, SOLO DEBE DE HABE RUN RETURN
         }
-        this.#keyArray[index].append(key, value)
-        return this.#keyArray[index].string();
-        //     if (this.#keyArray[index].getName == key) {
-        //     this.#keyArray[index].changeValue(value);
-        // }
-        // console.log(index);
-
-
-        // return this.#keyArray[1];
-
-        //CUATRO CASOS
-        //1.- ESTA VACIO
-        //2.- YA HAY UN VALOR Y ES LA MISMA KEY
-        //3.- YA HAY UN VALOR Y NO ES LA MISMA KEY
-        //4.- YA HAY UN VALOR Y LA LINKED LIST SIGUE
-        
+        //Go to the next node
+        counter = counter.getNextNode;
+      }
+      //After the for loop we know that there is not a same key so we append the new node
+      this.#keyArray[index].append(key, value);
+      //INICIA BORRAR, ESTO SOLO ES PARA IR CHECANDO QUE FUNCIONE
+      return this.#keyArray[index].string(); 
+      //ACABA BORRAR, SOLO DEBE DE HABE RUN RETURN   
     }
-    
+    //AQUI FALTA EL HACER CRECER EL ARRAY AL FINAL
 }
 
 let example = new HashMap();
@@ -336,3 +333,5 @@ console.log(example.hash("t") % 16);
 console.log(example.getKeyArrays);
 console.log(example.set("Carlos", "I am the old value"));
 console.log(example.set("Carlos", "I am the new value"));
+console.log(example.set("t", "I am the t old value"));
+console.log(example.set("t", "I am the t new value"));
