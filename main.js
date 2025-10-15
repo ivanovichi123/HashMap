@@ -224,6 +224,31 @@ class LinkedList {
     }
   }
 
+  //Push into an array the value of the name of the nodes
+  allNodes(array) {
+    //Variable to stop when it reaches the end of the linked list
+    let stop = 1;
+    //The counter starts at the beginning
+    let counter = this.#head;
+    //Check if the linked list is empty
+    if (this.#head === 0) {
+      return;
+    } else {
+      while(stop === 1) {
+        //Push into the array the value
+        array.push(counter.getName);
+        //If the next node is empty we are at the end and end the while cycle
+        if(counter.getNextNode === null) {
+          stop = 0;
+        } else {
+          //Counter is the next node 
+          counter = counter.getNextNode;
+        }
+      }
+      return array;
+    }
+  }
+
   //Returns a string with the complete linked list
   string() {
     //Variable to stop when it reaches the end of the linked list
@@ -356,7 +381,7 @@ class HashMap {
         throw new Error("Trying to access index out of bounds");
       }
       //Check if the index is empty
-      if(this.#keyArray[index] == undefined) {
+      if(this.#keyArray[index] === undefined || this.#keyArray[index].getSize === 0) {
           //Create a new linked list that will store the values
           let list = new LinkedList();
           //Append to the linked list a node with the key and value
@@ -402,7 +427,7 @@ class HashMap {
         throw new Error("Trying to access index out of bounds");
       }
       //If the index is empty
-      if(this.#keyArray[index] == undefined) {
+      if(this.#keyArray[index] === undefined || this.#keyArray[index].getSize === 0) {
         return null;
       } else {
         //If the index is not empty, create a counter to iterate over the the nodes
@@ -432,7 +457,7 @@ class HashMap {
         throw new Error("Trying to access index out of bounds");
       }
       //If the index is empty
-      if(this.#keyArray[index] == undefined) {
+      if(this.#keyArray[index] === undefined || this.#keyArray[index].getSize === 0) {
         return false;
       } else {
         //If the index is not empty, create a counter to iterate over the the nodes
@@ -462,7 +487,7 @@ class HashMap {
         throw new Error("Trying to access index out of bounds");
       }
       //If the index is empty
-      if(this.#keyArray[index] == undefined) {
+      if(this.#keyArray[index] === undefined || this.#keyArray[index].getSize === 0) {
         return false;
       } else {
         //If the index is not empty, create a counter to iterate over the the nodes
@@ -481,6 +506,47 @@ class HashMap {
         return false;
       }
     }
+
+    //Return the total of keys in the hash map
+    length() {
+      //Counter of the keys
+      let counter = 0;
+      //For loops that goes through all the buckets 
+      for(let i = 1; i <= this.#capacity; i++) {
+        //If there is something in the bucket
+        if(this.#keyArray[i] !== undefined) {
+          //Get the size of the linked list
+          counter += this.#keyArray[i].getSize;
+        }
+      }
+      return counter;
+    }
+
+    //Removes all the keys in the hash map
+    clear() {
+      //For loops that goes through all the buckets
+      for(let i = 1; i <= this.#capacity; i++) {
+        //Set the value to undefined
+        this.#keyArray[i] = undefined;
+      }
+    }
+
+    //Return an array with all the keys
+    keys() {
+      //Array that will store the keys
+      let allKeys = [];
+      //For loop to go through all the buckets
+      for(let i = 1; i <= this.#capacity; i++) {
+        //Check if the bucket is empty
+        if(this.#keyArray[i] !== undefined) {
+          this.#keyArray[i].allNodes(allKeys);
+        }
+      }
+      return allKeys;
+    }
+
+
+
 
 
 }
@@ -513,6 +579,11 @@ console.log(example.set("d", "hello"));
 console.log(example.remove("t"));
 console.log(example.set("t", "I am back"));
 console.log(example.remove("Ivan"));
+console.log(example.set("Ivan", "Pikmin"));
+console.log(example.length());
+// console.log(example.clear());
+// console.log(example.set("t", "I am back"));
+console.log(example.keys());
 
 
 
