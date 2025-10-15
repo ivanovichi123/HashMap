@@ -168,41 +168,60 @@ class LinkedList {
     return "The value does not exist";
   }
   
+  //Deletes an specific index of the LinkedList
   delete(index) {
     //Check if the list is empty
     if (this.#size === 0) {
       return false;
     //Check if the list only has one node
     } else if(this.#size === 1) {
-      //Set value to null to delete the space in memory
+      //Set value and name to null to delete the space in memory
       this.#head.changeValue(null);
+      this.#tail.changeName(null);
       //The linked list is now empty
       this.#head = 0;
       this.#tail = 0;
       this.#size -= 1;
+      return true;
+      //Check if the index is the first Node
+    } else if (index == 0) {
+      //Variable for the current node
+      let currentNode = this.#head;
+      //Move the head to the next node
+      this.#head = this.#head.getNextNode;
+      //Set values to null to erase space in memory
+      currentNode.changeValue(null);
+      currentNode.changeName(null);
+      currentNode.changeNextNode(null);
+      //The size decreases
+      this.#size -= 1;
+      return true;
     } else {
       //Create a variable to store the node that is before the index node
       let previousNode = this.#head;
-      //Reduce the index so that the while loop stops before the desire node
-      let sizes = this.getSize - 1; 
       let counter = 1;
       //While loop to find the node that is before the index
-      while(counter < sizes) {
+      while(counter < index) {
         previousNode = previousNode.getNextNode;
         counter += 1;
       }
+      let currentNode = previousNode.getNextNode;
       //Change the value to null of the last node to delete space in memory
-      this.#tail.changeValue(null);
+      currentNode.changeValue(null);
       //Change the name to null of the last node to delete space in memory
-      this.#tail.changeName(null);
-      //Tail becomes the node that is before the last node
-      this.#tail = previousNode;
+      currentNode.changeName(null);
+      //The previous node next node is the next node of the current one
+      previousNode.changeNextNode(currentNode.getNextNode);
       //The next node now is null, because it was deleted
-      this.#tail.changeNextNode(null);
+      currentNode.changeNextNode(null);
+      //If the index was in the last node, the tail is equal to the previous node
+      if(index == this.#size - 1) {
+        this.#tail = previousNode;
+      }
       //Reduce the size of the linked list
       this.#size -= 1;
+      return true;
     }
-
   }
 
   //Returns a string with the complete linked list
@@ -452,7 +471,8 @@ class HashMap {
         for(let i = 0; i < this.#keyArray[index].getSize; i++) {
           //Check if the name of the node is equal to the key
           if(counter.getName == key) {
-            return true;
+            //Delete the node in the index
+            return this.#keyArray[index].delete(i);
           }
           //If it is not equal continue to the next node
           counter = counter.getNextNode;
@@ -481,3 +501,18 @@ console.log(example.get("Carlos"));
 console.log(example.has("i"));
 console.log(example.has("t"));
 console.log(example.has("Carlos"));
+console.log(example.remove("t"));
+console.log(example.set("t", "I am back"));
+console.log(example.has("t"));
+console.log(example.remove("Carlos"));
+console.log(example.remove("t"));
+console.log(example.set("t", "I am back"));
+console.log(example.set("Carlos", "I am also back"));
+console.log(example.hash("d") % 16);
+console.log(example.set("d", "hello"));
+console.log(example.remove("t"));
+console.log(example.set("t", "I am back"));
+console.log(example.remove("Ivan"));
+
+
+
