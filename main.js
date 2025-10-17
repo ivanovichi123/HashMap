@@ -224,19 +224,28 @@ class LinkedList {
     }
   }
 
-  //Push into an array the value of the name of the nodes
-  allNodes(array) {
+  //Push into an array the value of the name or the value of the nodes
+  allNodes(array, type) {
+    let allArray = [];
     //Variable to stop when it reaches the end of the linked list
     let stop = 1;
     //The counter starts at the beginning
     let counter = this.#head;
     //Check if the linked list is empty
     if (this.#head === 0) {
+      array.push([]);
       return;
     } else {
       while(stop === 1) {
-        //Push into the array the value
-        array.push(counter.getName);
+        //Push into the array the value or name of the node
+        if(type === "key") {
+          array.push(counter.getName);
+        } else if (type === "value"){
+          array.push(counter.getValue);
+        } else {
+          allArray.push(counter.getName);
+          allArray.push(counter.getValue);
+        }
         //If the next node is empty we are at the end and end the while cycle
         if(counter.getNextNode === null) {
           stop = 0;
@@ -244,6 +253,10 @@ class LinkedList {
           //Counter is the next node 
           counter = counter.getNextNode;
         }
+      }
+      //Put all the information in the array
+      if (type === "all") {
+        array.push(allArray);
       }
       return array;
     }
@@ -388,10 +401,8 @@ class HashMap {
           list.append(key, value);
           //The index stores the linked list
           this.#keyArray[index] = list;
-          //INICIA BORRAR, ESTO SOLO ES PARA IR CHECANDO QUE FUNCIONE
-          let a = this.#keyArray[index];
-          return a.string();
-          //ACABA BORRAR, SOLO DEBE DE HABE RUN RETURN
+          this.growBuckets();
+          return;
       } 
       //If the index already has a linked list, create a counter to iterate over the the nodes
       let counter = this.#keyArray[index].getHead;
@@ -401,19 +412,15 @@ class HashMap {
         if(counter.getName == key) {
           //Update the value to the new one
           counter.changeValue(value);
-          //INICIA BORRAR, ESTO SOLO ES PARA IR CHECANDO QUE FUNCIONE
-          return this.#keyArray[index].string();
-          //ACABA BORRAR, SOLO DEBE DE HABE RUN RETURN
+          return;
         }
         //Go to the next node
         counter = counter.getNextNode;
       }
       //After the for loop we know that there is not a same key so we append the new node
       this.#keyArray[index].append(key, value);
-      //INICIA BORRAR, ESTO SOLO ES PARA IR CHECANDO QUE FUNCIONE
-      return this.#keyArray[index].string(); 
-      //ACABA BORRAR, SOLO DEBE DE HABE RUN RETURN   
-      //AQUI FALTA EL HACER CRECER EL ARRAY AL FINAL
+      this.growBuckets();
+      return; 
     }
 
     //Get the value of the key
@@ -539,51 +546,143 @@ class HashMap {
       for(let i = 1; i <= this.#capacity; i++) {
         //Check if the bucket is empty
         if(this.#keyArray[i] !== undefined) {
-          this.#keyArray[i].allNodes(allKeys);
+          this.#keyArray[i].allNodes(allKeys,"key");
         }
       }
       return allKeys;
     }
 
+    //Return an array with all the values
+    values() {
+      //Array that will store the value
+      let allValues = [];
+      //For loop to go through all the buckets
+      for(let i = 1; i <= this.#capacity; i++) {
+        //Check if the bucket is empty
+        if(this.#keyArray[i] !== undefined) {
+          this.#keyArray[i].allNodes(allValues,"value");
+        }
+      }
+      return allValues;
+    }
 
+    //Returns an array with the names and values of the buckets
+    entries() {
+      //Array that will store the nodes
+      let allBuckets = [];
+      for(let i = 1; i <= this.#capacity; i++) {
+        //Check if the bucket is empty
+        if(this.#keyArray[i] !== undefined) {
+          this.#keyArray[i].allNodes(allBuckets,"all");
+        } else {
+          allBuckets.push([]);
+        }
+      }
+      return allBuckets;
+    }
 
-
-
+    //Function that grows the number of buckets when the limit is exceeded
+    growBuckets() {
+      //Counter that will receive the nodes of the linked lists
+      let counter = 0;
+      //Get the number of the current keys
+      let keys = this.length();
+      //Get the value of the limit of keys
+      let limit = this.#capacity * this.#loadFactor;
+      //If the keys are higher than the limit
+      if (keys > limit) {
+        //Save the capacity before change it
+        let oldCapacity = this.#capacity
+        //Double the capacity
+        this.#capacity = this.#capacity * 2;
+        //Save the old array before change it
+        let oldArray = this.#keyArray;
+        //Create a new array with the new capacity
+        this.#keyArray = new Array(this.#capacity);
+        //For loop that goes through all the elements in the old array
+        for(let i = 1; i <= oldCapacity; i++) {
+          //If the index in the old array has something
+          if(oldArray[i] !== undefined) {
+            if(oldArray[i].getSize !== 0) {
+              //Counter gets the value of the first node
+              counter = oldArray[i].getHead;
+              //For loop that goes through all the nodes in the linked list
+              for(let j = 0; j < oldArray[i].getSize; j++) {
+                //Set the elements for the new array of buckets
+                this.set(counter.getName, counter.getValue);
+                //Go to the next node
+                counter = counter.getNextNode;
+              }
+            }
+          }
+        }
+      }
+      return;
+    }
 }
 
-let example = new HashMap();
-console.log(example);
-console.log(example.getLoadFactor);
-console.log(example.getCapacity);
-console.log(example.hash("t") % 16);
-console.log(example.getKeyArrays);
-console.log(example.set("Carlos", "I am the old value"));
-console.log(example.set("Carlos", "I am the new value"));
-console.log(example.set("t", "I am the t old value"));
-console.log(example.set("t", "I am the t new value"));
-console.log(example.get("i"));
-console.log(example.get("t"));
-console.log(example.get("Carlos"));
-console.log(example.has("i"));
-console.log(example.has("t"));
-console.log(example.has("Carlos"));
-console.log(example.remove("t"));
-console.log(example.set("t", "I am back"));
-console.log(example.has("t"));
-console.log(example.remove("Carlos"));
-console.log(example.remove("t"));
-console.log(example.set("t", "I am back"));
-console.log(example.set("Carlos", "I am also back"));
-console.log(example.hash("d") % 16);
-console.log(example.set("d", "hello"));
-console.log(example.remove("t"));
-console.log(example.set("t", "I am back"));
-console.log(example.remove("Ivan"));
-console.log(example.set("Ivan", "Pikmin"));
-console.log(example.length());
-// console.log(example.clear());
+// let example = new HashMap();
+// console.log(example);
+// console.log(example.getLoadFactor);
+// console.log(example.getCapacity);
+// console.log(example.hash("t") % 16);
+// console.log(example.getKeyArrays);
+// console.log(example.set("Carlos", "I am the old value"));
+// console.log(example.set("Carlos", "I am the new value"));
+// console.log(example.set("t", "I am the t old value"));
+// console.log(example.set("t", "I am the t new value"));
+// console.log(example.get("i"));
+// console.log(example.get("t"));
+// console.log(example.get("Carlos"));
+// console.log(example.has("i"));
+// console.log(example.has("t"));
+// console.log(example.has("Carlos"));
+// console.log(example.remove("t"));
 // console.log(example.set("t", "I am back"));
-console.log(example.keys());
+// console.log(example.has("t"));
+// console.log(example.remove("Carlos"));
+// console.log(example.remove("t"));
+// console.log(example.set("t", "I am back"));
+// console.log(example.set("Carlos", "I am also back"));
+// console.log(example.hash("d") % 16);
+// console.log(example.set("d", "hello"));
+// console.log(example.remove("t"));
+// console.log(example.set("t", "I am back"));
+// console.log(example.remove("Ivan"));
+// console.log(example.set("Ivan", "Pikmin"));
+// console.log(example.length());
+// console.log(example.keys());
+// console.log(example.values());
+// console.log(example.entries());
+// console.log(example.set("q","I am another value"));
+// console.log(example.getLoadFactor);
+// console.log(example.getCapacity);
+// console.log(example.length());
+// console.log(example.entries());
 
-
-
+// const test = new HashMap();
+//  test.set('apple', 'red');
+//  test.set('banana', 'yellow');
+//  test.set('carrot', 'orange');
+//  test.set('dog', 'brown');
+//  test.set('elephant', 'gray');
+//  test.set('frog', 'green');
+//  test.set('grape', 'purple');
+//  test.set('hat', 'black');
+//  test.set('ice cream', 'white');
+//  test.set('jacket', 'blue');
+//  test.set('kite', 'pink');
+//  test.set('lion', 'golden');
+//  console.log(test.entries());
+// console.log(test.length());
+// test.set("apple", "new value");
+// test.set("banana", "new value 2");
+//  console.log(test.entries());
+//  console.log(test.length());
+//  test.set('moon', 'silver');
+//   console.log(test.entries());
+//  console.log(test.length());
+//  test.set("moon", "second new value");
+//    console.log(test.entries());
+//  console.log(test.length());
+//  console.log(test.has("moon"));
